@@ -1,6 +1,6 @@
 # Edge Gallery — with API Server
 
-> 🆕 **What's new in this fork:** an [OpenAI-compatible HTTP API Server](#api-server--quick-start) has been added on top of the original Google AI Edge Gallery. Jump to [The Idea](#the-idea) · [Screenshots](#screenshots) · [Recommended Device Specs](#recommended-device-specs) · [Endpoints](#endpoints) · [Building from Source](#building-from-source).
+> 🆕 **What's new in this fork:** an [OpenAI-compatible HTTP API Server](#api-server--quick-start) has been added on top of the original Google AI Edge Gallery. Jump to [The Idea](#the-idea) · [Install](#install) · [Screenshots](#screenshots) · [Recommended Device Specs](#recommended-device-specs) · [Endpoints](#endpoints) · [Building from Source](#building-from-source).
 
 > 📱 **Android-only fork.** This repository ships the Android sources only. The API server is written in Kotlin against Ktor + the Android JVM runtime, so **it does not build for iOS**. iPhone users should use the original [google-ai-edge/gallery](https://github.com/google-ai-edge/gallery), which has no API server but does ship an iOS app.
 
@@ -54,9 +54,36 @@ In practice, devices in the class of **Galaxy S20 / Note 20 / Pixel 5 / OnePlus 
 
 ---
 
+## Install
+
+Two paths — pick whichever fits you. **Most users should just grab the prebuilt APK; building from source is only needed if you want to modify the app.**
+
+### Option 1 — Download the prebuilt APK (no build environment needed)
+
+A signed APK is published on the [**Releases page**](https://github.com/ultra21c/edge-gallery-with-api/releases).
+
+- 🔗 **Latest release**: https://github.com/ultra21c/edge-gallery-with-api/releases/latest
+- 📦 **Direct APK download** (v1.0.15): https://github.com/ultra21c/edge-gallery-with-api/releases/download/v1.0.15/edge-gallery-with-api-v1.0.15.apk (~148 MB)
+
+Install on a connected phone with adb:
+
+```bash
+adb install -r edge-gallery-with-api-v1.0.15.apk
+```
+
+…or transfer the APK to the phone, tap it in a file manager, and accept the "install from unknown source" prompt for that manager.
+
+> The published APK is **signed with a debug keystore** — fine for personal use and sideloading, but you'll see Android's "untrusted source" warning the first time. It is not, and is not intended to be, distributable through Google Play.
+
+### Option 2 — Build from source
+
+If you want to modify the code or self-sign, follow the [Building from Source](#building-from-source) section below. This requires Android Studio (or JDK 17 + Android SDK) and a HuggingFace OAuth app.
+
+---
+
 ## API Server — Quick Start
 
-1. Install the APK (see [Building from Source](#building-from-source) or grab the latest release).
+1. Install the APK — see the [Install](#install) section above.
 2. Open the app → top-left hamburger menu → **Settings**.
 3. Scroll to **API Server**, flip the toggle to **ON**.
 4. The settings screen displays the URL — typically `http://<phone-ip>:11434`.
@@ -168,6 +195,8 @@ Text responses from `/v1/chat/completions` are **unchanged** — the markdown su
 ---
 
 ## Building from Source
+
+> **You probably don't need this section.** If you only want to *use* the app, grab the prebuilt APK from the [Install](#install) section above — it's the same binary, just published as a release asset. This section is for people who want to modify the code, sign with their own key, or build off a different branch.
 
 ### Prerequisites
 
