@@ -18,6 +18,7 @@ package com.google.ai.edge.gallery.data
 
 import androidx.datastore.core.DataStore
 import com.google.ai.edge.gallery.proto.AccessTokenData
+import com.google.ai.edge.gallery.proto.ApiServerConfig
 import com.google.ai.edge.gallery.proto.BenchmarkResult
 import com.google.ai.edge.gallery.proto.BenchmarkResults
 import com.google.ai.edge.gallery.proto.Cutout
@@ -28,7 +29,9 @@ import com.google.ai.edge.gallery.proto.Skill
 import com.google.ai.edge.gallery.proto.Skills
 import com.google.ai.edge.gallery.proto.Theme
 import com.google.ai.edge.gallery.proto.UserData
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
 // TODO(b/423700720): Change to async (suspend) functions
@@ -109,6 +112,15 @@ interface DataStoreRepository {
 
   /** Returns whether a promo with the specified ID has been viewed. */
   fun hasViewedPromo(promoId: String): Boolean
+
+  /** Reads the API server configuration. Returns sensible defaults if unset. */
+  fun readApiServerConfig(): com.google.ai.edge.gallery.proto.ApiServerConfig
+
+  /** Persists the API server configuration. */
+  fun saveApiServerConfig(config: com.google.ai.edge.gallery.proto.ApiServerConfig)
+
+  /** Reactive flow of the API server configuration. */
+  fun apiServerConfigFlow(): kotlinx.coroutines.flow.Flow<com.google.ai.edge.gallery.proto.ApiServerConfig>
 }
 
 /** Repository for managing data using Proto DataStore. */
@@ -427,5 +439,26 @@ class DefaultDataStoreRepository(
       val settings = dataStore.data.first()
       settings.viewedPromoIdList.contains(promoId)
     }
+  }
+
+  override fun readApiServerConfig(): ApiServerConfig {
+    return runBlocking { withApiServerDefaults(dataStore.data.first().apiServerConfig) }
+  }
+
+  override fun saveApiServerConfig(config: ApiServerConfig) {
+    runBlocking {
+      dataStore.updateData { settings -> settings.toBuilder().setApiServerConfig(config).build() }
+    }
+  }
+
+  override fun apiServerConfigFlow(): Flow<ApiServerConfig> {
+    return dataStore.data.map { withApiServerDefaults(it.apiServerConfig) }
+  }
+
+  private fun withApiServerDefaults(config: ApiServerConfig): ApiServerConfig {
+    val builder = config.toBuilder()
+    if (config.port == 0) builder.port = 11434
+    if (config.idleUnloadMinutes == 0) builder.idleUnloadMinutes = 5
+    return builder.build()
   }
 }

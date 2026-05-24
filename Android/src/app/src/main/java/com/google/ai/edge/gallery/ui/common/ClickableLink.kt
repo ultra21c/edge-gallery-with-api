@@ -16,7 +16,13 @@
 
 package com.google.ai.edge.gallery.ui.common
 
+import android.content.ActivityNotFoundException
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
@@ -28,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.LinkAnnotation
@@ -44,6 +51,7 @@ import com.google.ai.edge.gallery.ui.theme.customColors
 @Composable
 fun buildTrackableUrlAnnotatedString(url: String, linkText: String): AnnotatedString {
   val uriHandler = LocalUriHandler.current
+  val context = LocalContext.current
   return buildAnnotatedString {
     withLink(
       link =
@@ -58,7 +66,16 @@ fun buildTrackableUrlAnnotatedString(url: String, linkText: String): AnnotatedSt
                 )
             ),
           linkInteractionListener = {
-            uriHandler.openUri(url)
+            // openUri() throws IllegalArgumentException -> ActivityNotFoundException when no
+            // browser (or any activity that can handle android.intent.action.VIEW on https) is
+            // installed/enabled. That used to crash the whole app. Fall back to copying the
+            // link to the clipboard so the user still has a path forward.
+            try {
+              uriHandler.openUri(url)
+            } catch (e: Exception) {
+              Log.w("ClickableLink", "Failed to open $url: ${e.message}")
+              copyToClipboardAndToast(context, url)
+            }
             firebaseAnalytics?.logEvent(
               "resource_link_click",
               Bundle().apply { putString("link_destination", url) },
@@ -68,6 +85,15 @@ fun buildTrackableUrlAnnotatedString(url: String, linkText: String): AnnotatedSt
     ) {
       append(linkText)
     }
+  }
+}
+
+private fun copyToClipboardAndToast(context: Context, url: String) {
+  runCatching {
+    val cm = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+    cm.setPrimaryClip(ClipData.newPlainText("URL", url))
+    Toast.makeText(context, "No browser installed — link copied to clipboard", Toast.LENGTH_LONG)
+      .show()
   }
 }
 

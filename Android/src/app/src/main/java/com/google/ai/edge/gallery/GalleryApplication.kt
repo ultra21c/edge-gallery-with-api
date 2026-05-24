@@ -17,6 +17,8 @@
 package com.google.ai.edge.gallery
 
 import android.app.Application
+import com.google.ai.edge.gallery.apiserver.ApiServerConfig
+import com.google.ai.edge.gallery.apiserver.ApiServerService
 import com.google.ai.edge.gallery.data.DataStoreRepository
 import com.google.ai.edge.gallery.notifications.NotificationScheduleManager
 import com.google.ai.edge.gallery.ui.theme.ThemeSettings
@@ -40,5 +42,13 @@ class GalleryApplication : Application() {
     ThemeSettings.themeOverride.value = dataStoreRepository.readTheme()
 
     FirebaseApp.initializeApp(this)
+
+    // Honor the "auto-start API server" preference if it was previously enabled. We don't fail
+    // the app if the service start request is rejected by the OS — the user can still toggle
+    // it manually in Settings.
+    val apiServerConfig = ApiServerConfig.fromProto(dataStoreRepository.readApiServerConfig())
+    if (apiServerConfig.autoStart) {
+      runCatching { ApiServerService.start(this) }
+    }
   }
 }

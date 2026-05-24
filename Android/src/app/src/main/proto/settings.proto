@@ -64,6 +64,30 @@ message LlmConfig {
   bool support_speculative_decoding = 11;
 }
 
+message ApiServerConfig {
+  // Whether the API server should auto-start on app launch / boot.
+  bool auto_start = 1;
+  // TCP port to bind the server on. Default 11434.
+  int32 port = 2;
+  // Optional API key for *our* server. If empty, no auth is required.
+  string api_key = 3;
+  // Minutes of inactivity after which the model is unloaded. 0 = never.
+  int32 idle_unload_minutes = 4;
+  // Name of the model to serve by default (matches Model.name). Empty = auto pick.
+  string default_model_name = 5;
+  // Whether to honor X-Conversation-Id header (KV cache reuse).
+  bool enable_conversation_cache = 6;
+
+  // ElevenLabs TTS backend (optional). When api key is set, TTS routes use ElevenLabs and
+  // fall back to Android TextToSpeech only on transient failures.
+  string elevenlabs_api_key = 7;
+  // ElevenLabs voice id to use by default (e.g. "21m00Tcm4TlvDq8ikWAM" = Rachel). Empty =
+  // use the first one mapped by the OpenAI-style "voice" request field.
+  string elevenlabs_voice_id = 8;
+  // ElevenLabs model id (e.g. "eleven_multilingual_v2", "eleven_turbo_v2_5"). Empty = default.
+  string elevenlabs_model_id = 9;
+}
+
 message Settings {
   Theme theme = 1;
   AccessTokenData access_token_data = 2;  // deprecated
@@ -81,6 +105,9 @@ message Settings {
   // copybara:strip_end
 
   repeated string viewed_promo_id = 10;
+
+  // API server configuration.
+  ApiServerConfig api_server_config = 11;
 }
 
 message McpAuth {
