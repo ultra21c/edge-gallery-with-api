@@ -65,15 +65,71 @@ A signed APK is published on the [**Releases page**](https://github.com/ultra21c
 - 🔗 **Latest release**: https://github.com/ultra21c/edge-gallery-with-api/releases/latest
 - 📦 **Direct APK download** (v1.0.15): https://github.com/ultra21c/edge-gallery-with-api/releases/download/v1.0.15/edge-gallery-with-api-v1.0.15.apk (~148 MB)
 
-Install on a connected phone with adb:
+> The published APK is **signed with a debug keystore** — fine for personal use and sideloading, but you'll see Android's "untrusted source" warning the first time. It is not, and is not intended to be, distributable through Google Play.
+
+#### Step-by-step: tap-to-install on the phone (recommended for non-developers)
+
+Open this README on your phone, then follow the steps below. Each step has a screenshot — the whole flow takes about 30 seconds.
+
+**Step 1 — Download the APK.** Open the [release page](https://github.com/ultra21c/edge-gallery-with-api/releases/latest) in your phone's browser and tap the `.apk` link.
+
+<img src="mcp/screenshots/apk-install-step1-download-file.jpeg" width="280" alt="Step 1: download APK from release page"/>
+
+**Step 2 — Open the downloaded file.** Tap the download notification, or open **Files / My Files → Downloads** and tap the APK.
+
+<img src="mcp/screenshots/apk-install-step2-open-file.jpeg" width="280" alt="Step 2: open the downloaded APK"/>
+
+**Step 3 — Android asks for permission.** First time only: Android pops up "For your security, your phone is not allowed to install unknown apps from this source." Tap **Settings** on that prompt.
+
+<img src="mcp/screenshots/apk-install-step3-require-permit.jpeg" width="280" alt="Step 3: permission prompt"/>
+
+**Step 4 — Allow the source app to install unknown apps.** Toggle **Allow from this source** ON for whichever app opened the APK (your browser or file manager). Then go back.
+
+<p>
+  <img src="mcp/screenshots/apk-install-step4-permit-allow_1.jpeg" width="220" alt="Step 4a"/>
+  <img src="mcp/screenshots/apk-install-step4-permit-allow_2.jpeg" width="220" alt="Step 4b"/>
+  <img src="mcp/screenshots/apk-install-step4-permit-allow_3.jpeg" width="220" alt="Step 4c"/>
+</p>
+
+**Step 5 — (Samsung only) bypass Auto Blocker / Play Protect.** Samsung's Auto Blocker or Google's Play Protect may flag the install. Choose **Install anyway** / **Install without scanning** to proceed. This APK is safe — it's just not distributed through Play, so Play Protect has no reputation data on it.
+
+<p>
+  <img src="mcp/screenshots/apk-install-step5-auto-cut_1.jpeg" width="260" alt="Step 5a"/>
+  <img src="mcp/screenshots/apk-install-step5-auto-cut_2.jpeg" width="260" alt="Step 5b"/>
+</p>
+
+**Step 6 — (If a previous version is already installed) confirm replace.** If you (or the Play Store) previously installed any version of AI Edge Gallery on this device, Android will show an "Update / Replace existing app" confirmation. Tap **Update** / **OK**.
+
+<p>
+  <img src="mcp/screenshots/apk-install-step6-reinstall_1.jpeg" width="260" alt="Step 6a"/>
+  <img src="mcp/screenshots/apk-install-step6-reinstall_2.jpeg" width="260" alt="Step 6b"/>
+</p>
+
+**Step 7 — Tap Install.** The familiar install confirmation. Tap **Install**.
+
+<img src="mcp/screenshots/apk-install-step7-install-start.jpeg" width="280" alt="Step 7: tap Install"/>
+
+**Step 8 — Wait for "App installed", then tap Open.**
+
+<img src="mcp/screenshots/apk-install-step8-open.jpeg" width="280" alt="Step 8: app installed, tap Open"/>
+
+**Step 9 — The app launches.** Accept any first-run prompts (notifications, battery optimization opt-out for the API server).
+
+<img src="mcp/screenshots/apk-install-step9-opened.jpeg" width="280" alt="Step 9: app first launch"/>
+
+**Step 10 — Done.** A new **Edge Gallery (with a small "API" badge in the corner)** icon now lives on your home screen / app drawer.
+
+<img src="mcp/screenshots/apk-install-step10-app-icon.jpeg" width="280" alt="Step 10: app icon on home screen"/>
+
+#### Alternative: install via adb (for developers)
+
+If you have a computer with `adb` set up and the phone plugged in over USB with USB debugging enabled:
 
 ```bash
 adb install -r edge-gallery-with-api-v1.0.15.apk
 ```
 
-…or transfer the APK to the phone, tap it in a file manager, and accept the "install from unknown source" prompt for that manager.
-
-> The published APK is **signed with a debug keystore** — fine for personal use and sideloading, but you'll see Android's "untrusted source" warning the first time. It is not, and is not intended to be, distributable through Google Play.
+Faster, no taps — but not necessary. The tap-to-install flow above is the easiest path for everyone else.
 
 ### Option 2 — Build from source
 
